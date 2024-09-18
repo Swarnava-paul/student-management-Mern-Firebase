@@ -29,7 +29,7 @@ ServiceRouter.get('/students', async (req, res) => {
        
       let students = snapShot.docs.map((stu)=>stu.data());
 
-      return res.status(200).json({response : true , students});
+      return res.status(200).json({response : true , students , message : "Student Data Fetched Successful"});
 
 
     } catch (error) {
@@ -38,7 +38,7 @@ ServiceRouter.get('/students', async (req, res) => {
     }
 }); // get all students with pagination
 
-ServiceRouter.get('/students/add/form',async(req,res)=>{
+ServiceRouter.post('/students/add/form',async(req,res)=>{
   try{
    const {age,classNumber,section,name} = req.body; // student info
 
