@@ -5,40 +5,34 @@ const db = require('../Config/Connection.db');
 
 ServiceRouter.get('/students', async (req, res) => {
     try {
-        const { page = 1} = req.query; // Accepting filter parameters
-        const limit = 5; // Number of students per page
-        const pageNumber = parseInt(page, 10); // Convert page number to an integer
+      const {rollNumber,classNumber,name} = req.query;
+      const roll = parseInt(rollNumber,10);
+      const classNum = parseInt(classNumber,10);
+      const studentRef = db.collection('students');
 
-        let query = db.collection('students').orderBy('admissionNumber'); // Base query
-        let snapShot;
+      let snapShot;
 
-        // If page number is greater than 1, use startAfter to paginate
-        if (pageNumber > 1) {
-            const previousPageSnapshot = await query.limit((pageNumber - 1) * limit).get();
-            const lastVisible = previousPageSnapshot.docs[previousPageSnapshot.docs.length - 1];
+      if(rollNumber) {
+       snapShot = await studentRef.where('rollNumber' , '==' , roll).get();
+      } else if (classNumber) {
+       snapShot = await studentRef.where('class' , '==' , classNum).get();
+      } else if (name) {
+       snapShot = await studentRef.where('name' , '==' , `${name}`).get();
+      } else {
+       snapShot = await studentRef.get();
+      }
 
-            if (!lastVisible) {
-                return res.status(404).json({ message: "No more students found." });
-            }
+      if(snapShot.empty) {
+        return res.status(404).json({message:"No Students Found"});
+      }
+       
+      let students = snapShot.docs.map((stu)=>stu.data());
 
-            // Query starting after the last document from the previous page
-            snapShot = await query.startAfter(lastVisible).limit(limit).get();
-        } else {
-            // For the first page, no need to paginate, just limit the results
-            snapShot = await query.limit(limit).get();
-        }
+      return res.status(200).json({response : true , students});
 
-        // If no students are found, return an empty array
-        if (snapShot.empty) {
-            return res.json({ students: [], currentPage: pageNumber });
-        }
 
-        // Extract student data
-        const students = snapShot.docs.map(stu => stu.data());
-
-        // Send response with student data and the current page
-        res.json({ students, currentPage: pageNumber });
     } catch (error) {
+        console.log(error)
         res.status(500).json({ error: 'Failed to fetch students' });
     }
 }); // get all students with pagination
