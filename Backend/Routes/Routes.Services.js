@@ -2,6 +2,7 @@ const express = require('express');
 const ServiceRouter = express.Router();
 const db = require('../Config/Connection.db');
 
+ServiceRouter.use(express.json());
 
 ServiceRouter.get('/students', async (req, res) => {
     try {
@@ -37,17 +38,42 @@ ServiceRouter.get('/students', async (req, res) => {
     }
 }); // get all students with pagination
 
+ServiceRouter.get('/students/add/form',async(req,res)=>{
+  try{
+   const {age,classNumber,section,name} = req.body; // student info
 
+   const data = await db.collection('students').get(); // get students
+   const students = data.docs.map((stu)=>stu.data()); // store in array
+   const {admissionNumber, rollNumber} = students[students.length-1]; // admission number of last enrolled student
 
+   const generateAdmissionNumber = `ADM${parseInt([...admissionNumber]
+    .map(Number).filter((i)=>i.toString() != 'NaN')
+    .join(""),10) +1 }` // add 1 to last regestration number form a new registration number and follow the order
+   
+    const generateRollNumber = rollNumber+1
+    
+    const info = {
+      name,
+      age,
+      class : classNumber,
+      section,
+      rollNumber : generateRollNumber,
+      admissionNumber : generateAdmissionNumber,
+    } // info object
 
-ServiceRouter.get('/add',async(req,res)=>{
- /*students.map(async(stu)=>{
-    await db.collection('students').doc(stu.admissionNumber).set(stu);
- })*/
- res.end('success')
-}) // i used to add initial mock student data for development perpose
+    const addStudent = await db.collection('students').doc(generateAdmissionNumber).set(info)
 
-// 1. this above endpoint should be able to send data pagination
-// 2. should be accept filters in query string
+    if(!addStudent) {
+      return res.status(500).json({message:"Student Not Added"})
+    }
+
+    return res.status(200).json({Response : true , message:"Student Added"})
+
+  }catch(error) {
+    console.log(error)
+    res.status(500).json({message:"Internal Server Error"})
+  }
+}) // handles the logic of add student using form
+
 
 module.exports = ServiceRouter;
