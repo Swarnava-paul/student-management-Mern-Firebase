@@ -1,2 +1,3 @@
 Config/firebase.json
 node_modules
+.env
