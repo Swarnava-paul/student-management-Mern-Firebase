@@ -70,10 +70,10 @@ const [display,setDisplay] = useState('display')
       <Td>{section}</Td>
       <Td>{age}</Td>
       <Td>
-      <QRCode value={stringQrValue} size={50} style={{width:"60%"}}/>
+      <QRCode value={stringQrValue} size={70} style={{width:"60%"}}/>
       </Td>
       <Td>
-        <Button w='100%' fontSize={14} pos='static'
+        <Button w='100%' fontSize={20} pos='static'
          bg={index % 2 == 0 ? 'white' : 'RGB(254, 235, 200)'} onClick={()=>setDisplay('hide')}>View</Button>
       </Td>
      </Tr>
