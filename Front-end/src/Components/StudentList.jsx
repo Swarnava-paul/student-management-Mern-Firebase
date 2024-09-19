@@ -12,10 +12,13 @@ import {
 } from '@chakra-ui/react'
 import { useState } from "react";
 import QRCode from 'react-qr-code'
+
+
 const StudentList = ({students,isLoading,message}) => {
 
 
   return (
+    <>
     <Box minHeight='25vh' mt={10}>
       <Text textAlign='center' fontFamily='sans-serif' fontSize={14}>{message}</Text>
       {
@@ -45,6 +48,7 @@ const StudentList = ({students,isLoading,message}) => {
         ))
       }
     </Box>
+    </>
   )
 }
 
@@ -95,20 +99,3 @@ const [display,setDisplay] = useState('display')
 
 
 export default StudentList
-
-/*
-   <Tr>
-    <Td>{admissionNumber}</Td>
-    <Td>{name}</Td>
-    <Td>{classNumber}</Td>
-    <Td>{section}</Td>
-    <Td>{age}</Td>
-    <Td>
-    <QRCode value={stringQrValue} size={50} style={{width:"60%"}}/>
-    </Td>
-    <Td>
-      <Button w='100%' fontSize={14}
-       bg={index % 2 == 0 ? 'white' : 'RGB(254, 235, 200)'}>View</Button>
-    </Td>
-   </Tr>
-*/
